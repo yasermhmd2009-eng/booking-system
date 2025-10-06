@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام حجز المواعيد الذكي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        header {
+            background: linear-gradient(135deg, #2c5f8a, #1e4a6e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .main-content {
+            padding: 30px;
+        }
+        .service-box {
+            background: linear-gradient(135deg, #e8f4ff, #d4e7ff);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            border-right: 5px solid #2c5f8a;
+            transition: transform 0.3s;
+        }
+        .service-box:hover {
+            transform: translateX(-5px);
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin: 25px 0;
+        }
+        .time-btn {
+            padding: 15px;
+            background: white;
+            border: 2px solid #2c5f8a;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .time-btn:hover {
+            background: #2c5f8a;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .time-btn.selected {
+            background: #2c5f8a;
+            color: white;
+            box-shadow: 0 5px 15px rgba(44, 95, 138, 0.3);
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #2c5f8a;
+            box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.1);
+        }
+        .book-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2c5f8a, #1e4a6e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        .book-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(44, 95, 138, 0.3);
+        }
+        .book-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .benefits {
+            background: linear-gradient(135deg, #f8fff0, #f0ffe8);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-right: 5px solid #5f8a2c;
+        }
+        .benefit-item {
+            margin: 12px 0;
+            padding-right: 30px;
+            position: relative;
+            font-size: 16px;
+        }
+        .benefit-item:before {
+            content: "✅";
+            position: absolute;
+            right: 0;
+        }
+        .tech-stack {
+            background: linear-gradient(135deg, #fff0f8, #ffe8f3);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-right: 5px solid #8a2c5f;
+        }
+        .tech-item {
+            display: inline-block;
+            background: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 20px;
+            border: 2px solid #8a2c5f;
+            font-weight: bold;
+            color: #8a2c5f;
+        }
+        .confirmation {
+            display: none;
+            text-align: center;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, #f0fff4, #e8ffe8);
+            border-radius: 15px;
+            margin-top: 20px;
+            border-right: 5px solid #2c8a5f;
+        }
+        .confirmation h2 {
+            color: #2c8a5f;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        .booking-details {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .admin-panel {
+            background: linear-gradient(135deg, #fff4f0, #ffe8e8);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-right: 5px solid #8a5f2c;
+            display: none;
+        }
+        .booking-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-right: 4px solid #8a5f2c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .view-admin {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .admin-btn {
+            background: #8a5f2c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .time-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📍 نظام حجز المواعيد الذكي</h1>
+            <p class="subtitle">اختار الميعاد المناسب لك وادخل بياناتك</p>
+        </header>
+
+        <div class="main-content" id="bookingSection">
+            <div class="service-box">
+                <h3>💼 استشارة تطوير مواقع ويب</h3>
+                <p>⏱️ مدة الجلسة: 60 دقيقة</p>
+                <p>💰 السعر: 200 جنيه</p>
+                <p>🎯 نقاط النقاش: تصميم الموقع - التسويق - التطوير</p>
+            </div>
+            
+            <h3>⏰ المواعيد المتاحة اليوم:</h3>
+            <div class="time-slots">
+                <button class="time-btn" onclick="selectTime(this)">9:00 ص</button>
+                <button class="time-btn" onclick="selectTime(this)">10:00 ص</button>
+                <button class="time-btn" onclick="selectTime(this)">11:00 ص</button>
+                <button class="time-btn" onclick="selectTime(this)">12:00 م</button>
+                <button class="time-btn" onclick="selectTime(this)">1:00 م</button>
+                <button class="time-btn" onclick="selectTime(this)">2:00 م</button>
+                <button class="time-btn" onclick="selectTime(this)">3:00 م</button>
+                <button class="time-btn" onclick="selectTime(this)">4:00 م</button>
+            </div>
+            
+            <div class="form-group">
+                <input type="text" class="form-input" id="nameInput" placeholder="🔤 اسمك الكريم" oninput="validateForm()">
+            </div>
+            <div class="form-group">
+                <input type="tel" class="form-input" id="phoneInput" placeholder="📞 رقم الهاتف" oninput="validateForm()">
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-input" id="emailInput" placeholder="📧 البريد الإلكتروني (اختياري)">
+            </div>
+            
+            <button class="book-btn" id="bookBtn" onclick="confirmBooking()" disabled>📅 تأكيد الحجز</button>
+            
+            <div class="benefits">
+                <h3>🎯 مزايا النظام:</h3>
+                <div class="benefit-item">توفير وقت العميل ومواعيدك</div>
+                <div class="benefit-item">تقليل الأخطاء في الحجوزات</div>
+                <div class="benefit-item">تنظيم أوقات الشغل بشكل احترافي</div>
+                <div class="benefit-item">ظهور احترافي قدام عملائك</div>
+                <div class="benefit-item">تقارير دورية عن الحجوزات</div>
+                <div class="benefit-item">دعم فني متواصل</div>
+            </div>
+
+            <div class="tech-stack">
+                <h3>🛠️ التقنيات المستخدمة:</h3>
+                <div class="tech-item">HTML5</div>
+                <div class="tech-item">CSS3</div>
+                <div class="tech-item">JavaScript</div>
+                <div class="tech-item">Responsive Design</div>
+                <div class="tech-item">Local Storage</div>
+                <div class="tech-item">Form Validation</div>
+                <div class="tech-item">Modern UI/UX</div>
+            </div>
+
+            <div class="view-admin">
+                <button class="admin-btn" onclick="toggleAdmin()">👨‍💼 عرض لوحة الإدارة</button>
+            </div>
+        </div>
+
+        <div class="confirmation" id="confirmationSection">
+            <h2>🎉 تم الحجز بنجاح!</h2>
+            <div class="booking-details">
+                <p><strong>رقم الحجز:</strong> <span id="bookingNumber">#2025001</span></p>
+                <p><strong>الاسم:</strong> <span id="clientName">-</span></p>
+                <p><strong>الهاتف:</strong> <span id="clientPhone">-</span></p>
+                <p><strong>الموعد:</strong> <span id="bookingTime">-</span></p>
+                <p><strong>الخدمة:</strong> استشارة تطوير مواقع</p>
+            </div>
+            <p>📞 سيتم التواصل معك خلال 24 ساعة لتأكيد الحجز</p>
+            <button class="book-btn" onclick="newBooking()" style="background: linear-gradient(135deg, #2c8a5f, #1e6e4a); margin-top: 20px;">➕ حجز جديد</button>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <h3>📊 لوحة إدارة المواعيد</h3>
+            <div id="bookingsList">
+                <!-- الحجوزات هتظهر هنا -->
+            </div>
+            <button class="admin-btn" onclick="toggleAdmin()" style="background: #666; margin-top: 15px;">← العودة</button>
+        </div>
+    </div>
+
+    <script>
+        // بيانات التطبيق
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        let selectedTime = '';
+        let bookingCounter = parseInt(localStorage.getItem('bookingCounter')) || 1;
+
+        // تحديد الوقت
+        function selectTime(button) {
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+            selectedTime = button.textContent;
+            validateForm();
+        }
+
+        // التحقق من النموذج
+        function validateForm() {
+            const name = document.getElementById('nameInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
+            const bookBtn = document.getElementById('bookBtn');
+            
+            if (name && phone && selectedTime) {
+                bookBtn.disabled = false;
+                bookBtn.textContent = `📅 احجز ${selectedTime}`;
+            } else {
+                bookBtn.disabled = true;
+                bookBtn.textContent = '📅 تأكيد الحجز';
+            }
+        }
+
+        // تأكيد الحجز
+        function confirmBooking() {
+            const name = document.getElementById('nameInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            
+            if (!name || !phone || !selectedTime) {
+                alert('⚠️ من فضلك املأ جميع البيانات المطلوبة');
+                return;
+            }
+
+            // حفظ الحجز
+            const booking = {
+                id: bookingCounter,
+                name: name,
+                phone: phone,
+                email: email,
+                time: selectedTime,
+                date: new Date().toLocaleDateString('ar-EG'),
+                status: 'معلق'
+            };
+            
+            bookings.push(booking);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            localStorage.setItem('bookingCounter', bookingCounter + 1);
+            
+            // عرض تأكيد الحجز
+            document.getElementById('bookingNumber').textContent = `#2025${bookingCounter.toString().padStart(3, '0')}`;
+            document.getElementById('clientName').textContent = name;
+            document.getElementById('clientPhone').textContent = phone;
+            document.getElementById('bookingTime').textContent = selectedTime;
+            
+            document.getElementById('bookingSection').style.display = 'none';
+            document.getElementById('confirmationSection').style.display = 'block';
+            
+            bookingCounter++;
+        }
+
+        // حجز جديد
+        function newBooking() {
+            // إعادة تعيين النموذج
+            document.getElementById('nameInput').value = '';
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('emailInput').value = '';
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            selectedTime = '';
+            validateForm();
+            
+            document.getElementById('confirmationSection').style.display = 'none';
+            document.getElementById('bookingSection').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        // عرض/إخفاء لوحة الإدارة
+        function toggleAdmin() {
+            const adminPanel = document.getElementById('adminPanel');
+            const bookingSection = document.getElementById('bookingSection');
+            const confirmationSection = document.getElementById('confirmationSection');
+            
+            if (adminPanel.style.display === 'block') {
+                adminPanel.style.display = 'none';
+                bookingSection.style.display = 'block';
+            } else {
+                adminPanel.style.display = 'block';
+                bookingSection.style.display = 'none';
+                confirmationSection.style.display = 'none';
+                loadBookings();
+            }
+        }
+
+        // تحميل الحجوزات
+        function loadBookings() {
+            const bookingsList = document.getElementById('bookingsList');
+            bookingsList.innerHTML = '';
+            
+            if (bookings.length === 0) {
+                bookingsList.innerHTML = '<p style="text-align: center; color: #666;">لا توجد حجوزات</p>';
+                return;
+            }
+            
+            bookings.forEach(booking => {
+                const bookingItem = document.createElement('div');
+                bookingItem.className = 'booking-item';
+                bookingItem.innerHTML = `
+                    <div>
+                        <strong>#2025${booking.id.toString().padStart(3, '0')}</strong><br>
+                        ${booking.name} - ${booking.phone}<br>
+                        <small>${booking.time} - ${booking.date}</small>
+                    </div>
+                    <button class="delete-btn" onclick="deleteBooking(${booking.id})">🗑️ حذف</button>
+                `;
+                bookingsList.appendChild(bookingItem);
+            });
+        }
+
+        // حذف الحجز
+        function deleteBooking(bookingId) {
+            if (confirm('هل تريد حذف هذا الحجز؟')) {
+                bookings = bookings.filter(booking => booking.id !== bookingId);
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                loadBookings();
+            }
+        }
+
+        // التهيئة الأولية
+        document.addEventListener('DOMContentLoaded', function() {
+            validateForm();
+        });
+    </script>
+</body>
+</html>
